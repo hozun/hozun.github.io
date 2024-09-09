@@ -32,7 +32,7 @@ function getRandomIndex() {
 // 단어 표시
 function displayWord() {
     const currentWord = words[currentWordIndex];
-    document.getElementById("koreanMeaning").innerText = `${currentWord.meaning} <span>&#x1F50A;</span>`;
+    document.getElementById("koreanMeaning").innerHTML = `${currentWord.meaning} <span>&#x1F50A;</span>`;
     document.getElementById("result").innerText = "";
     document.getElementById("answer").value = "";
 
