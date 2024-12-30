@@ -1,29 +1,251 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>단어 암기</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Word Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .word-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input {
+            flex: 1;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        li:hover {
+            background-color: #f0f8ff;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .controls button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+        #testControls, #results {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-    <h1>단어 암기</h1>
-    <button onclick="loadRandomWord()">새 단어 불러오기</button>
-    <p id="koreanMeaning" onclick="pronounceCurrentWord()">뜻: </p>
-    <input type="text" id="answer" placeholder="영어 단어를 입력하세요">
-    <button onclick="checkAnswer()">정답 확인</button>
-    <p id="result"></p>
-</div>
+    <h1>Word Tester</h1>
+    <div class="word-form">
+        <input type="text" id="wordInput" placeholder="Enter a word">
+        <button onclick="addWord()">Add Word</button>
+    </div>
+    <ul id="wordList"></ul>
+    <div class="controls">
+        <button onclick="startTest()">Start Test</button>
+    </div>
+    <div id="testControls">
+        <p id="currentWord">Testing in progress...</p>
+        <button onclick="nextWord()">Next</button>
+    </div>
+    <div id="results">
+        <h2>Test Results</h2>
+        <table border="1" style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Word</th>
+                    <th>Meaning (Korean)</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable"></tbody>
+        </table>
+    </div>
 
-<script src="https://code.responsivevoice.org/responsivevoice.js"></script>
-<script src="script.js"></script>
-<script>
-        // 페이지 로드 시 초기화
-        window.onload = function () {
-            loadRandomWord();
-            pronounceCurrentWord();  // 페이지 로드 시 자동으로 발음 재생
-        };
+    <script>
+        let testWords = [];
+        let currentIndex = 0;
+
+        // Initialize word list from LocalStorage
+        function initializeWords() {
+            const words = JSON.parse(localStorage.getItem('words')) || [];
+            updateWordList(words);
+        }
+
+        // Add a word to the list
+        function addWord() {
+            const wordInput = document.getElementById('wordInput');
+            const word = wordInput.value.trim();
+
+            if (!word) {
+                alert('Please enter a word!');
+                return;
+            }
+
+            const words = JSON.parse(localStorage.getItem('words')) || [];
+            words.push(word);
+            localStorage.setItem('words', JSON.stringify(words));
+            wordInput.value = '';
+            updateWordList(words);
+        }
+
+        // Update the word list UI
+        function updateWordList(words) {
+            const wordList = document.getElementById('wordList');
+            wordList.innerHTML = '';
+            words.forEach((word, index) => {
+                const li = document.createElement('li');
+                li.textContent = word;
+
+                // Add click event to play pronunciation
+                li.onclick = () => speakWord(word);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation(); // Prevent triggering the pronunciation
+                    removeWord(index);
+                };
+
+                li.appendChild(deleteBtn);
+                wordList.appendChild(li);
+            });
+        }
+
+        // Remove a word from the list
+        function removeWord(index) {
+            const words = JSON.parse(localStorage.getItem('words')) || [];
+            words.splice(index, 1);
+            localStorage.setItem('words', JSON.stringify(words));
+            updateWordList(words);
+        }
+
+        // Start the test
+        function startTest() {
+            const words = JSON.parse(localStorage.getItem('words')) || [];
+            if (words.length === 0) {
+                alert('No words to test!');
+                return;
+            }
+
+            testWords = words.sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+
+            // Hide word list and controls, show test UI
+            document.querySelector('.word-form').style.display = 'none';
+            document.getElementById('wordList').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            document.getElementById('testControls').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            // Start with the first word
+            showCurrentWord();
+        }
+
+        // Show the current word and speak it
+        function showCurrentWord() {
+            const currentWord = testWords[currentIndex];
+            document.getElementById('currentWord').textContent = `Word ${currentIndex + 1}`;
+            speakWord(currentWord);
+        }
+
+        // Move to the next word
+        function nextWord() {
+            currentIndex++;
+            if (currentIndex < testWords.length) {
+                showCurrentWord();
+            } else {
+                endTest();
+            }
+        }
+
+        // End the test
+        async function endTest() {
+            document.getElementById('testControls').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.querySelector('.word-form').style.display = 'flex';
+            document.getElementById('wordList').style.display = 'block';
+            document.querySelector('.controls').style.display = 'block';
+            await displayResults();
+        }
+
+        // Display test results with meanings
+        async function displayResults() {
+            const resultsTable = document.getElementById('resultsTable');
+            resultsTable.innerHTML = '';
+            for (let i = 0; i < testWords.length; i++) {
+                const word = testWords[i];
+                const meaning = await fetchKoreanMeaning(word);
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${i + 1}</td><td>${word}</td><td>${meaning}</td>`;
+                resultsTable.appendChild(row);
+            }
+        }
+
+        // Fetch word meaning in Korean using translation API
+        async function fetchKoreanMeaning(word) {
+            try {
+                const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodeURIComponent(word)}`);
+                const data = await response.json();
+                return data[0][0][0] || 'No translation found';
+            } catch (error) {
+                return 'Error fetching meaning';
+            }
+        }
+
+        // Speak a word using SpeechSynthesis API
+        function speakWord(word) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', initializeWords);
     </script>
 </body>
 </html>
