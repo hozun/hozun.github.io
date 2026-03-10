@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(printf '\\\\n' | npm create vite@latest . -- --template react-ts 2>&1)",
+      "Bash(cp -r /Users/hojun/workspace/cc-test1/tmp/weekly-schedule/. /Users/hojun/workspace/cc-test1/ && rm -rf /Users/hojun/workspace/cc-test1/tmp && ls /Users/hojun/workspace/cc-test1/)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
