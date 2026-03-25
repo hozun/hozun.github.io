@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "클로드 디스패치(Claude Dispatch) 소개 및 시작하기"
-date: 2026-03-25 10:00:00 +0900
+date: 2026-03-25 17:00:00 +0900
 tags: [팁]
 description: "여러 Claude 에이전트를 동시에 실행하는 멀티 에이전트 프레임워크, Claude Dispatch의 개념과 실전 튜토리얼"
 ---
