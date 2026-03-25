@@ -1,0 +1,22 @@
+---
+layout: default
+---
+<div class="tag-page">
+  <h1 class="tag-page-title">
+    <span class="tag-badge tag-badge--large">{{ page.tag }}</span>
+  </h1>
+  {% assign tagged_posts = site.posts | where_exp: "post", "post.tags contains page.tag" %}
+  {% if tagged_posts.size == 0 %}
+    <p class="empty-state">아직 글이 없습니다.</p>
+  {% else %}
+    <ul class="post-list">
+      {% for post in tagged_posts %}
+        <li class="post-item">
+          <span class="post-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <p class="back-link"><a href="{{ site.baseurl }}/">&larr; 전체 글 보기</a></p>
+</div>

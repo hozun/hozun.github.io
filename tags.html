@@ -1,0 +1,16 @@
+---
+layout: default
+title: 태그
+---
+<div class="tags-page">
+  <h1>태그</h1>
+  <div class="tag-cloud">
+    {% assign all_tags = site.posts | map: "tags" | join: "," | split: "," | uniq | sort %}
+    {% for tag in all_tags %}
+      {% assign count = site.posts | where_exp: "post", "post.tags contains tag" | size %}
+      <a href="{{ site.baseurl }}/tags/{{ tag | slugify }}/" class="tag-badge">
+        {{ tag }} <sup>{{ count }}</sup>
+      </a>
+    {% endfor %}
+  </div>
+</div>

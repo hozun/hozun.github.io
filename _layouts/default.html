@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  {% include head.html %}
+</head>
+<body>
+  <header>
+    <div class="container">
+      {% include nav.html %}
+    </div>
+  </header>
+  <main class="container">
+    {{ content }}
+  </main>
+  <footer class="container">
+    <p class="footer-text">&copy; {{ site.time | date: "%Y" }} {{ site.author }}</p>
+  </footer>
+</body>
+</html>
