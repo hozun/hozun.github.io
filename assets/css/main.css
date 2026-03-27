@@ -65,6 +65,8 @@ body {
   flex-shrink: 0;
 }
 .post-link {
+  flex: 1;
+  min-width: 0;
   font-weight: 500;
   color: #1a1a1a;
   text-decoration: none;
