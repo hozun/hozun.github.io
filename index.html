@@ -9,7 +9,7 @@ title: Home
   <span class="filter-label">태그</span>
   <a href="{{ '/' | relative_url }}" class="tag-btn active">전체</a>
   {% for tag in all_tags %}
-    <a href="{{ site.baseurl }}/tags/{{ tag | slugify }}/" class="tag-btn">{{ tag }}</a>
+    <a href="{{ site.baseurl }}/tags/{{ tag }}/" class="tag-btn">{{ tag }}</a>
   {% endfor %}
 </div>
 {% endif %}
@@ -25,7 +25,7 @@ title: Home
         {% if post.tags.size > 0 %}
           <span class="post-tags">
             {% for tag in post.tags %}
-              <a href="{{ site.baseurl }}/tags/{{ tag | slugify }}/" class="tag-badge">{{ tag }}</a>
+              <a href="{{ site.baseurl }}/tags/{{ tag }}/" class="tag-badge">{{ tag }}</a>
             {% endfor %}
           </span>
         {% endif %}
