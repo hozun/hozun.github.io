@@ -71,10 +71,10 @@ body {
   color: #1a1a1a;
   text-decoration: none;
   font-size: 0.97rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: block;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .post-link:hover { color: #0057e7; }
 .post-tags {
