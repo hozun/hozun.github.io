@@ -11,7 +11,7 @@ layout: default
       {% if page.tags.size > 0 %}
         <span class="post-meta-tags">
           {% for tag in page.tags %}
-            <a href="{{ site.baseurl }}/tags/{{ tag | slugify }}/" class="tag-badge">{{ tag }}</a>
+            <a href="{{ site.baseurl }}/tags/{{ tag }}/" class="tag-badge">{{ tag }}</a>
           {% endfor %}
         </span>
       {% endif %}
