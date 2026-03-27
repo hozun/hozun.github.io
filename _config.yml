@@ -30,7 +30,6 @@ plugins:
 collections:
   tags:
     output: true
-    permalink: /tags/:name/
 
 defaults:
   - scope:
