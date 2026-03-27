@@ -8,7 +8,7 @@ title: 태그
     {% assign all_tags = site.posts | map: "tags" | join: "," | split: "," | uniq | sort %}
     {% for tag in all_tags %}
       {% assign count = site.posts | where_exp: "post", "post.tags contains tag" | size %}
-      <a href="{{ site.baseurl }}/tags/{{ tag | slugify }}/" class="tag-badge">
+      <a href="{{ site.baseurl }}/tags/{{ tag }}/" class="tag-badge">
         {{ tag }} <sup>{{ count }}</sup>
       </a>
     {% endfor %}
