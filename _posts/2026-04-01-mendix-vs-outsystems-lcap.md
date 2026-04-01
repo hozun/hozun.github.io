@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Mendix vs. OutSystems LCAP 비교 분석"
-date: 2026-03-31 10:39:00 +0900
+date: 2026-04-01 10:46:00 +0900
 tags: [로우코드, 기업IT, 개발]
 description: "Gartner MQ 9년 연속 리더, 엔터프라이즈 로우코드의 양대 산맥 Mendix와 OutSystems를 아키텍처·통합·보안·가격까지 2025년 최신 데이터로 완전 비교한다."
 ---
