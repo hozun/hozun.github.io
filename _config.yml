@@ -5,6 +5,7 @@ baseurl: ""
 author: hozun
 
 timezone: Asia/Seoul
+future: true
 
 markdown: kramdown
 highlighter: rouge
