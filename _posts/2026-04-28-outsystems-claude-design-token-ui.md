@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "OutSystems + Claude로 디자인 토큰 기반 UI 개발하기"
-date: 2026-04-27 09:49:00 +0900
+date: 2026-04-28 10:06:00 +0900
 tags: [인공지능, 개발, 로우코드, 팁]
 description: "디자인 토큰 → 레이아웃 시안 → O11 Theme 적용까지, Figma 없이 Claude만으로 일관된 UI 파이프라인을 만드는 방법."
 ---
