@@ -79,26 +79,31 @@ description: "AI가 코드를 짜는 대신, AI가 스펙과 태스크를 만들
 요구사항엔 "직원", "휴가", "잔여일수"라는 단어만 있었는데, AI가 엔티티와 속성, 관계로 확정한다.
 
 ```
-┌──────────────┐        ┌────────────────────┐
-│  Employee    │ 1    N │  LeaveRequest      │
-│──────────────│◄───────│────────────────────│
-│ Id           │        │ Id                 │
-│ Name         │        │ EmployeeId (FK)    │
-│ ManagerId(FK)│──┐     │ Type (연차/반차)   │
-│ RoleId  (FK) │  │자기 │ StartDate          │
-└──────────────┘  │참조 │ EndDate            │
-       │ 1        └─────►│ UsedDays (계산값)  │
-       │                 │ Status             │
-       │ N               │ RejectReason       │
-┌──────────────┐         │ CreatedOn          │
-│ LeaveBalance │         └────────────────────┘
-│──────────────│
-│ EmployeeId FK│         ┌──────────────┐
-│ Year         │         │ Holiday      │  (공휴일 참조)
-│ GrantedDays  │         │──────────────│
-│ UsedDays     │         │ Date         │
-│ RemainingDays│         │ Name         │
-└──────────────┘         └──────────────┘
+┌─────────────────┐   1       N   ┌──────────────────────┐
+│ Employee        │───────────────│ LeaveRequest         │
+├─────────────────┤───────────────├──────────────────────┤
+│ Id (PK)         │               │ Id (PK)              │
+│ Name            │               │ EmployeeId (FK)      │
+│ ManagerId (FK)  │               │ Type                 │
+│ RoleId (FK)     │               │ StartDate            │
+└────────┬────────┘               │ EndDate              │
+         │ 1                      │ UsedDays             │
+         │                        │ Status               │
+         │ N                      │ RejectReason         │
+┌────────┴────────┐               │ CreatedOn            │
+│ LeaveBalance    │               └──────────────────────┘
+├─────────────────┤
+│ EmployeeId (FK) │               ┌──────────────────┐
+│ Year            │               │ Holiday          │
+│ GrantedDays     │               ├──────────────────┤
+│ UsedDays        │               │ Date (PK)        │
+│ RemainingDays   │               │ Name             │
+└─────────────────┘               └──────────────────┘
+
+· Employee.ManagerId → Employee.Id  (자기참조: 직속 팀장)
+· Employee 1 : N LeaveRequest,  Employee 1 : N LeaveBalance(연도별)
+· Holiday: FK 없이 일수 계산 로직에서 참조하는 공휴일 테이블
+· Type = 연차/반차,  UsedDays = 주말·공휴일 제외한 계산값
 ```
 
 | 엔티티 | 역할 | 핵심 속성 |
