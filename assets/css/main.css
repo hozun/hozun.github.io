@@ -206,6 +206,20 @@ body {
 }
 .post-content th { background: #f8f8f8; font-weight: 600; }
 
+/* ── Mermaid diagrams ────────────────────────────────── */
+.post-content pre.mermaid {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  text-align: center;
+  overflow-x: auto;
+  line-height: normal;
+}
+.post-content pre.mermaid:not([data-processed="true"]) {
+  visibility: hidden;
+}
+
 /* ── Syntax highlight ────────────────────────────────── */
 .highlight {
   background: #f8f8f8;

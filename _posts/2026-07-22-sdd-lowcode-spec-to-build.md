@@ -4,6 +4,7 @@ title: "SDD 산출물을 눈으로: 요구사항→스펙→태스크, 그리고
 date: 2026-07-22 10:00:00 +0900
 tags: [로우코드, 인공지능, 개발]
 description: "AI가 코드를 짜는 대신, AI가 스펙과 태스크를 만들고 사람이 로우코드로 구현한다. 연차 휴가 결재 앱을 소재로 요구사항·스펙·태스크 3종 산출물을 실제 형태로 보여주고, 이 방식이 휴먼인더루프와 동작하는 서비스를 동시에 남기는 이유를 정리한다."
+mermaid: true
 ---
 
 앞선 [SDD 확산 글](/2026/07/22/sdd-diffusion-spec-as-contract.html)에서 "스펙이 계약이 된다"고 썼다. 그런데 대부분의 SDD 논의는 **AI가 코드까지 짜는 것**을 전제한다. 여기서 방향을 하나 틀어보자.
@@ -18,18 +19,16 @@ description: "AI가 코드를 짜는 대신, AI가 스펙과 태스크를 만들
 
 ## 전체 흐름: 어디까지 AI, 어디부터 사람
 
-```
- 사람(현업/기획)        AI 에이전트              사람(로우코드 개발자)
- ─────────────         ────────────            ────────────────────
-   요구사항       ──►    스펙 생성       ──►         태스크를
-   (자연어)              (구조화)                    하나씩 구현
-      │                    │                    (Entity/Screen/Action)
-      │                    ▼                           │
-      └──── 리뷰 ◄──── 태스크 분해 ──► 리뷰 ─────────►  │
-                       (빌드 순서표)                    ▼
-                                                  동작하는 서비스
-                                                  + 각 단계 점검 완료
-```
+<pre class="mermaid">
+flowchart LR
+    R["사람 · 요구사항 (자연어)"] --> S["AI · 스펙 생성 (구조화)"]
+    S --> T["AI · 태스크 분해 (빌드 순서표)"]
+    T --> B["사람 · 로우코드 구현 (Entity/Screen/Action)"]
+    B --> D["동작하는 서비스 + 단계별 점검 완료"]
+    S -. 리뷰 .-> R
+    T -. 리뷰 .-> S
+    B -. 태스크마다 점검 .-> T
+</pre>
 
 핵심은 화살표 사이사이의 **리뷰**다. 요구사항→스펙에서 한 번, 스펙→태스크에서 한 번, 그리고 사람이 각 태스크를 구현하며 매번. AI가 코드까지 다 짜버리면 이 점검 지점들이 뭉개진다. 사람이 짓기 때문에 점검이 강제된다.
 
@@ -78,33 +77,42 @@ description: "AI가 코드를 짜는 대신, AI가 스펙과 태스크를 만들
 
 요구사항엔 "직원", "휴가", "잔여일수"라는 단어만 있었는데, AI가 엔티티와 속성, 관계로 확정한다.
 
-```
-┌─────────────────┐   1       N   ┌──────────────────────┐
-│ Employee        │───────────────│ LeaveRequest         │
-├─────────────────┤───────────────├──────────────────────┤
-│ Id (PK)         │               │ Id (PK)              │
-│ Name            │               │ EmployeeId (FK)      │
-│ ManagerId (FK)  │               │ Type                 │
-│ RoleId (FK)     │               │ StartDate            │
-└────────┬────────┘               │ EndDate              │
-         │ 1                      │ UsedDays             │
-         │                        │ Status               │
-         │ N                      │ RejectReason         │
-┌────────┴────────┐               │ CreatedOn            │
-│ LeaveBalance    │               └──────────────────────┘
-├─────────────────┤
-│ EmployeeId (FK) │               ┌──────────────────┐
-│ Year            │               │ Holiday          │
-│ GrantedDays     │               ├──────────────────┤
-│ UsedDays        │               │ Date (PK)        │
-│ RemainingDays   │               │ Name             │
-└─────────────────┘               └──────────────────┘
+<pre class="mermaid">
+erDiagram
+    EMPLOYEE ||--o{ LEAVE_REQUEST : "신청 (1:N)"
+    EMPLOYEE ||--o{ LEAVE_BALANCE : "연도별 잔여 (1:N)"
+    EMPLOYEE ||--o{ EMPLOYEE : "직속 팀장 (자기참조)"
+    EMPLOYEE {
+        int      Id           PK
+        string   Name
+        int      ManagerId    FK
+        int      RoleId       FK
+    }
+    LEAVE_REQUEST {
+        int      Id           PK
+        int      EmployeeId   FK
+        string   Type         "연차 또는 반차"
+        date     StartDate
+        date     EndDate
+        decimal  UsedDays     "주말·공휴일 제외한 계산값"
+        string   Status       "대기/승인/반려"
+        string   RejectReason
+        datetime CreatedOn
+    }
+    LEAVE_BALANCE {
+        int      EmployeeId   FK
+        int      Year
+        decimal  GrantedDays
+        decimal  UsedDays
+        decimal  RemainingDays
+    }
+    HOLIDAY {
+        date     Date         PK
+        string   Name
+    }
+</pre>
 
-· Employee.ManagerId → Employee.Id  (자기참조: 직속 팀장)
-· Employee 1 : N LeaveRequest,  Employee 1 : N LeaveBalance(연도별)
-· Holiday: FK 없이 일수 계산 로직에서 참조하는 공휴일 테이블
-· Type = 연차/반차,  UsedDays = 주말·공휴일 제외한 계산값
-```
+> Holiday는 다른 엔티티와 FK로 엮이지 않고, 일수 계산 로직에서만 참조하는 공휴일 테이블이다.
 
 | 엔티티 | 역할 | 핵심 속성 |
 |---|---|---|
@@ -123,18 +131,19 @@ description: "AI가 코드를 짜는 대신, AI가 스펙과 태스크를 만들
 
 ### 2-3. 사용자 흐름 (신청 → 결재)
 
-```
-직원                시스템                 팀장
- │  신청 작성         │                      │
- │───────────────────►│ 잔여일수 검증        │
- │                    │ (부족하면 거절)      │
- │                    │ Status=대기          │
- │                    │────── 알림 ─────────►│
- │                    │                      │ 결재함에서 확인
- │                    │◄──── 승인/반려 ──────│ (반려 시 사유 필수)
- │◄───── 알림 ────────│ 잔여 차감(승인 시)   │
- │                    │ Status=승인/반려     │
-```
+<pre class="mermaid">
+sequenceDiagram
+    actor E as 직원
+    participant S as 시스템
+    actor M as 팀장
+    E->>S: 휴가 신청 제출
+    S->>S: 잔여일수 검증 (부족하면 거절)
+    Note over S: Status = 대기
+    S-->>M: 신청 알림
+    M->>S: 승인 또는 반려 (반려 시 사유 필수)
+    S->>S: 승인 시 잔여 차감, Status 갱신
+    S-->>E: 결과 알림 (인앱 + 이메일)
+</pre>
 
 ### 2-4. 수용 기준 (EARS 표기)
 
