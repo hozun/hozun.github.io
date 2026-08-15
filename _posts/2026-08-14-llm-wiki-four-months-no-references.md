@@ -222,5 +222,3 @@ RAG는 검색 품질을 재는 방법이 정립돼 있다. 위키는 그게 없�
 - [OpenWiki HN 스레드](https://news.ycombinator.com/item?id=48752949) — 실사용 보고
 - [Knowledge Compounding (arXiv:2604.11243)](https://arxiv.org/abs/2604.11243) — 토큰을 자본재로 보는 경제 분석
 - [OpenWiki OKF 구현 리뷰](https://openknowledgeformat.com/implementations/openwiki) — 준수 범위와 한계
-</content>
-</invoke>
