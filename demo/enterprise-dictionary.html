@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전사 용어사전 · Lead-to-Cash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ══════════════════════════════════════════════════════════
+   TOKENS
+   ══════════════════════════════════════════════════════════ */
+:root{
+  --paper:#E7ECEF;
+  --card:#FFFFFF;
+  --ink:#0F1B23;
+  --ink-2:#41535F;
+  --ink-3:#7A8A96;
+  --rule:#CBD5DB;
+  --rule-soft:#E2E8EC;
+
+  --sys-sap:#4A3FA8;
+  --sys-sfdc:#12756A;
+  --sys-oss:#AC5518;
+
+  --gap:#A32718;
+  --proposed:#8A6410;
+  --ok:#12756A;
+
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:Pretendard,"Pretendard Variable",-apple-system,BlinkMacSystemFont,system-ui,"Malgun Gothic",sans-serif;
+
+  --r:3px;
+  --shadow:0 1px 2px rgba(15,27,35,.06),0 8px 24px -12px rgba(15,27,35,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--sys-sap);outline-offset:2px}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+}
+
+/* ══════════════════════════════════════════════════════════
+   MASTHEAD
+   ══════════════════════════════════════════════════════════ */
+.masthead{
+  border-bottom:1px solid var(--rule);
+  background:var(--card);
+}
+.masthead__inner{
+  max-width:1440px;margin:0 auto;
+  padding:18px 24px 0;
+  display:flex;flex-wrap:wrap;gap:28px;
+  align-items:flex-start;justify-content:space-between;
+}
+.wordmark{display:flex;flex-direction:column;gap:3px}
+.wordmark__name{
+  font-family:var(--mono);
+  font-size:17px;font-weight:600;letter-spacing:-.02em;
+}
+.wordmark__sub{font-size:12px;color:var(--ink-3)}
+
+/* coverage rail — the honest headline number */
+.coverage{display:flex;gap:22px;flex-wrap:wrap}
+.cov{min-width:104px}
+.cov__label{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.cov__dot{width:7px;height:7px;border-radius:50%;flex:none}
+.cov__name{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em}
+.cov__num{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1;letter-spacing:-.03em}
+.cov__num small{font-size:11px;font-weight:400;color:var(--ink-3);letter-spacing:0}
+.cov__bar{height:3px;background:var(--rule-soft);margin-top:7px;position:relative;overflow:hidden}
+.cov__bar i{position:absolute;inset:0 auto 0 0;display:block}
+
+/* tabs */
+.tabs{
+  max-width:1440px;margin:0 auto;
+  padding:14px 24px 0;
+  display:flex;gap:2px;
+}
+.tab{
+  padding:8px 16px 9px;
+  font-size:13px;font-weight:500;
+  color:var(--ink-3);
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tab .cnt{
+  font-family:var(--mono);font-size:10px;
+  margin-left:6px;padding:1px 5px;
+  background:var(--rule-soft);border-radius:2px;color:var(--ink-2);
+}
+
+/* ══════════════════════════════════════════════════════════
+   SHELL
+   ══════════════════════════════════════════════════════════ */
+.shell{max-width:1440px;margin:0 auto;padding:20px 24px 60px}
+.panel[hidden]{display:none}
+
+.split{display:grid;grid-template-columns:326px minmax(0,1fr);gap:20px;align-items:start}
+
+/* ── index column ── */
+.index{
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+  position:sticky;top:16px;max-height:calc(100vh - 40px);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.search{position:relative;border-bottom:1px solid var(--rule-soft);flex:none}
+.search input{
+  width:100%;padding:13px 44px 13px 14px;border:0;background:transparent;
+  font-family:var(--mono);font-size:13px;color:var(--ink);
+}
+.search input::placeholder{color:var(--ink-3);font-family:var(--sans)}
+.search input:focus{outline:none}
+.search kbd{
+  position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10px;color:var(--ink-3);
+  border:1px solid var(--rule);border-radius:2px;padding:1px 5px;background:var(--paper);
+}
+.filters{padding:10px 12px;border-bottom:1px solid var(--rule-soft);display:flex;flex-wrap:wrap;gap:4px;flex:none}
+.chip{
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.04em;
+  padding:3px 8px;border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+}
+.chip:hover{border-color:var(--ink-3)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.termlist{overflow-y:auto;flex:1;padding:4px 0 8px}
+.grouphead{
+  padding:12px 14px 5px;position:sticky;top:0;background:var(--card);
+  border-bottom:1px solid var(--rule-soft);z-index:1;
+}
+.termrow{
+  display:block;width:100%;text-align:left;
+  padding:8px 14px;border-left:2px solid transparent;
+}
+.termrow:hover{background:var(--paper)}
+.termrow[aria-current="true"]{background:var(--paper);border-left-color:var(--ink)}
+.termrow__id{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:-.01em;display:block}
+.termrow__ko{font-size:11px;color:var(--ink-3);display:block;margin-top:1px}
+.termrow__flags{display:inline-flex;gap:3px;margin-left:5px;vertical-align:1px}
+.flagdot{width:5px;height:5px;border-radius:50%;display:inline-block}
+.empty{padding:28px 16px;color:var(--ink-3);font-size:12px;text-align:center}
+
+/* ── detail column ── */
+.detail{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);box-shadow:var(--shadow)}
+.dhead{padding:24px 28px 20px;border-bottom:1px solid var(--rule-soft)}
+.dhead__top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.dhead__id{
+  font-family:var(--mono);font-size:27px;font-weight:600;
+  letter-spacing:-.035em;line-height:1.15;margin:0;
+}
+.dhead__ko{font-size:15px;color:var(--ink-2);margin:3px 0 0}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  padding:3px 8px;border-radius:2px;border:1px solid;
+}
+.badge--ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 32%,transparent);background:color-mix(in srgb,var(--ok) 6%,transparent)}
+.badge--proposed{color:var(--proposed);border-color:color-mix(in srgb,var(--proposed) 34%,transparent);background:color-mix(in srgb,var(--proposed) 8%,transparent)}
+.badge--gap{color:var(--gap);border-color:color-mix(in srgb,var(--gap) 32%,transparent);background:color-mix(in srgb,var(--gap) 6%,transparent)}
+.badge--plain{color:var(--ink-2);border-color:var(--rule)}
+
+.facts{display:flex;flex-wrap:wrap;gap:0 34px;margin-top:18px}
+.fact{min-width:96px}
+.fact dt{margin:0 0 2px}
+.fact dd{margin:0;font-size:13px}
+.fact dd.m{font-family:var(--mono);font-size:12px}
+
+.dsec{padding:22px 28px;border-bottom:1px solid var(--rule-soft)}
+.dsec:last-child{border-bottom:0}
+.dsec__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.definition{font-size:14.5px;line-height:1.68;margin:0;max-width:66ch}
+.note{
+  margin:14px 0 0;padding:11px 14px;font-size:12.5px;line-height:1.6;
+  background:var(--paper);border-left:2px solid var(--ink-3);color:var(--ink-2);max-width:70ch;
+}
+.note b{color:var(--ink);font-weight:600}
+
+/* ══════════════════════════════════════════════════════════
+   SIGNATURE — three parallel system tracks
+   ══════════════════════════════════════════════════════════ */
+.tracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.track{
+  border:1px solid var(--rule);border-radius:var(--r);
+  padding:13px 14px 14px;position:relative;overflow:hidden;
+  border-top-width:3px;
+}
+.track__sys{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.track__name{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em}
+.track__field{
+  font-family:var(--mono);font-size:14px;font-weight:500;
+  letter-spacing:-.02em;word-break:break-all;line-height:1.35;
+}
+.track__type{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:4px}
+.track__note{font-size:11.5px;color:var(--ink-2);margin-top:9px;line-height:1.55;border-top:1px dashed var(--rule);padding-top:8px}
+.track__tag{
+  display:inline-block;margin-top:9px;
+  font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.08em;
+  padding:2px 6px;border-radius:2px;
+}
+
+/* gaps are the product — make them loud */
+.track--gap{
+  border-color:color-mix(in srgb,var(--gap) 42%,transparent);
+  background:repeating-linear-gradient(-45deg,
+    transparent,transparent 7px,
+    color-mix(in srgb,var(--gap) 6%,transparent) 7px,
+    color-mix(in srgb,var(--gap) 6%,transparent) 14px);
+}
+.track--gap .track__field{color:var(--gap);font-weight:600}
+.track--na{background:var(--paper);border-color:var(--rule-soft);border-top-color:var(--rule)!important}
+.track--na .track__field{color:var(--ink-3);font-weight:400}
+
+/* ══════════════════════════════════════════════════════════
+   TABLES
+   ══════════════════════════════════════════════════════════ */
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl th{
+  text-align:left;padding:7px 10px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap;
+}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+.tbl tbody tr:hover{background:var(--paper)}
+.tbl .m{font-family:var(--mono);font-size:11.5px}
+.tbl .miss{color:var(--gap);font-family:var(--mono);font-size:11px}
+.tbl__wrap{overflow-x:auto;margin:0 -4px;padding:0 4px}
+
+.iflist{display:flex;flex-wrap:wrap;gap:5px}
+.if{
+  font-family:var(--mono);font-size:10.5px;
+  padding:3px 9px;border:1px solid var(--rule);border-radius:2px;color:var(--ink-2);
+}
+
+.linkbtn{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
+  color:var(--ink-3);border-bottom:1px solid var(--rule);padding-bottom:1px;
+}
+.linkbtn:hover{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* ══════════════════════════════════════════════════════════
+   FLAT PANELS (reverse lookup / gap report)
+   ══════════════════════════════════════════════════════════ */
+.board{background:var(--card);border:1px solid var(--rule);border-radius:var(--r)}
+.board__head{padding:20px 24px 16px;border-bottom:1px solid var(--rule-soft)}
+.board__title{font-size:16px;font-weight:600;margin:2px 0 4px}
+.board__desc{font-size:12.5px;color:var(--ink-2);margin:0;max-width:74ch}
+.board__body{padding:6px 24px 22px}
+.sysdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+.jump{font-family:var(--mono);font-size:11.5px;border-bottom:1px solid var(--rule)}
+.jump:hover{border-bottom-color:var(--ink)}
+
+.foot{
+  max-width:1440px;margin:0 auto;padding:0 24px 40px;
+  font-size:11.5px;color:var(--ink-3);line-height:1.7;
+}
+.foot code{font-family:var(--mono);font-size:11px;background:var(--card);padding:1px 5px;border:1px solid var(--rule-soft);border-radius:2px}
+
+@media (max-width:960px){
+  .split{grid-template-columns:1fr}
+  .index{position:static;max-height:420px}
+  .tracks{grid-template-columns:1fr}
+  .masthead__inner{padding:16px 16px 0}
+  .tabs,.shell,.foot{padding-left:16px;padding-right:16px}
+  .dhead,.dsec{padding-left:18px;padding-right:18px}
+  .dhead__id{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     이 아래 DICT 객체 하나만 교체하면 됩니다.
+     실제 운영에서는 canonical.yaml → build.py 가 이 블록을 생성합니다.
+     ══════════════════════════════════════════════════════════════════════ -->
+<script>
+const DICT = {
+  meta: {
+    name: "전사 용어사전",
+    scope: "Lead-to-Cash",
+    version: "0.4.0",
+    built: "2026-08-20",
+    steward: "데이터아키텍처 TF",
+    contact: "data-dict@example.com"
+  },
+
+  systems: [
+    { id:"SAP",  label:"SAP ECC",     color:"var(--sys-sap)",  snapshot:"2026-08-18 DDIC" },
+    { id:"SFDC", label:"Salesforce",  color:"var(--sys-sfdc)", snapshot:"2026-08-19 Metadata API" },
+    { id:"OSS",  label:"OutSystems",  color:"var(--sys-oss)",  snapshot:"2026-08-19 LifeTime" }
+  ],
+
+  domains: [
+    { id:"customer", label:"고객" },
+    { id:"sales",    label:"영업" },
+    { id:"order",    label:"수주" },
+    { id:"billing",  label:"청구" },
+    { id:"product",  label:"품목" }
+  ],
+
+  // 물리에는 있는데 아직 어느 개념에도 안 붙은 필드 (build.py 가 자동 집계)
+  unclassified: [
+    { system:"SFDC", field:"Account.Segment_2024__c", type:"Picklist",  seen:"2026-08-19", hint:"2024 캠페인용 임시 필드로 추정. 폐기 대상 확인 필요" },
+    { system:"SFDC", field:"Opportunity.Deal_Score__c", type:"Number(3,0)", seen:"2026-08-19", hint:"AI 스코어링 필드. 개념 등록 여부 미결정" },
+    { system:"SAP",  field:"KNA1-ZZCUST_GRADE", type:"CHAR(2)", seen:"2026-08-18", hint:"Z확장 필드. 고객등급으로 보이나 소유 도메인 미확인" },
+    { system:"OSS",  field:"Customer.LastSyncAt", type:"DateTime", seen:"2026-08-19", hint:"연동 기술필드. 개념 대상 아님으로 분류 예정" }
+  ],
+
+  terms: [
+    {
+      id:"Customer.id", ko:"고객 식별자", domain:"customer", type:"string",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"거래 상대 법인·개인을 전사에서 유일하게 식별하는 키. 세 시스템의 로컬 키는 각자 유지하되, 통합 계층에서는 SAP 고객번호를 전사 기준 ID로 사용한다.",
+      note:"세 시스템의 키 체계가 서로 다르므로 <b>크로스레퍼런스 테이블(XREF_CUSTOMER)</b>이 반드시 함께 존재해야 한다. 이 용어만으로는 동일 고객 식별이 불가능하다.",
+      mappings:{
+        SAP:{ field:"KNA1-KUNNR", type:"CHAR(10)", confidence:"confirmed", note:"선행 0 포함 10자리. 통합 시 좌측 0 제거하지 않는다." },
+        SFDC:{ field:"Account.SAP_Customer_No__c", type:"Text(10)", confidence:"confirmed", note:"Account.Id 가 아님. SAP 채번 후 역동기화되는 커스텀 필드." },
+        OSS:{ field:"Customer.SapCustomerNo", type:"Text(10)", confidence:"confirmed", note:"포털 로컬 PK 는 Customer.Id (Long Integer) 이며 전사 ID 아님." }
+      },
+      interfaces:["IF-001 고객마스터 동기화","IF-011 포털 고객조회"]
+    },
+    {
+      id:"Customer.name", ko:"고객명", domain:"customer", type:"string",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"고객의 법적 상호. 사업자등록증상 명칭을 원칙으로 하며, 통칭·약칭은 별도 개념(Customer.aliasName)으로 분리한다.",
+      mappings:{
+        SAP:{ field:"KNA1-NAME1", type:"CHAR(35)", confidence:"confirmed", note:"35자 초과 시 NAME2 로 넘어감. 통합 시 NAME1+NAME2 결합 필요." },
+        SFDC:{ field:"Account.Name", type:"Text(255)", confidence:"confirmed", note:"길이 제한이 SAP 보다 길어 역방향 전송 시 절삭 발생 가능." },
+        OSS:{ field:"Customer.Name", type:"Text(80)", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-001 고객마스터 동기화"]
+    },
+    {
+      id:"Customer.taxId", ko:"사업자등록번호", domain:"customer", type:"string",
+      owner:"재무팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"국세청이 부여한 10자리 사업자등록번호. 하이픈을 제외한 숫자만 저장한다.",
+      note:"세 시스템의 <b>저장 포맷이 다릅니다</b>. 통합 계층 진입 시 하이픈 제거로 정규화한 뒤 비교할 것.",
+      mappings:{
+        SAP:{ field:"KNA1-STCD2", type:"CHAR(11)", confidence:"confirmed", note:"하이픈 포함 저장 (000-00-00000)." },
+        SFDC:{ field:"Account.Business_No__c", type:"Text(12)", confidence:"confirmed", note:"입력 검증 없음. 하이픈 유무 혼재 상태." },
+        OSS:{ field:"Customer.BizRegNo", type:"Text(10)", confidence:"confirmed", note:"숫자 10자리만 저장. 정규형과 일치." }
+      },
+      interfaces:["IF-001 고객마스터 동기화"]
+    },
+    {
+      id:"Customer.status", ko:"고객 상태", domain:"customer", type:"enum",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"고객과의 거래 관계 상태. ACTIVE / DORMANT / SUSPENDED / CLOSED 네 가지를 전사 표준으로 한다.",
+      note:"<b>SAP 에는 휴면(DORMANT) 개념이 없습니다.</b> 파생 규칙으로 대체 중이므로 SAP 를 기준으로 휴면 고객 수를 집계하면 항상 0 이 나옵니다. 이 지표는 반드시 통합 계층에서 산출할 것.",
+      codes:[
+        { code:"ACTIVE",    label:"정상",     SAP:"LOEVM='' AND AUFSD=''", SFDC:"Status__c = 'Active'",  OSS:"StatusId = 1" },
+        { code:"DORMANT",   label:"휴면",     SAP:null,                    SFDC:"Status__c = 'Dormant'", OSS:"StatusId = 2" },
+        { code:"SUSPENDED", label:"거래정지", SAP:"AUFSD = '01'",          SFDC:"Status__c = 'Hold'",    OSS:"StatusId = 3" },
+        { code:"CLOSED",    label:"거래종료", SAP:"LOEVM = 'X'",           SFDC:"Status__c = 'Churned'", OSS:"StatusId = 4" }
+      ],
+      mappings:{
+        SAP:{ field:"KNA1-LOEVM / KNVV-AUFSD", type:"CHAR(1) ×2", confidence:"confirmed", note:"단일 필드가 아니라 두 지시자의 조합. 파생 뷰 ZV_CUST_STATUS 참조." },
+        SFDC:{ field:"Account.Status__c", type:"Picklist", confidence:"confirmed", note:"" },
+        OSS:{ field:"Customer.StatusId", type:"Integer", confidence:"confirmed", note:"정적 엔티티 CustomerStatus 참조." }
+      },
+      interfaces:["IF-001 고객마스터 동기화","IF-011 포털 고객조회"]
+    },
+    {
+      id:"Customer.creditLimit", ko:"여신한도", domain:"customer", type:"decimal",
+      owner:"재무팀", status:"confirmed",
+      scope:["SAP","SFDC"],
+      definition:"해당 고객에 대해 승인된 최대 미회수 채권 금액. 통화는 Order.currency 와 동일 기준을 따른다.",
+      mappings:{
+        SAP:{ field:"KNKK-KLIMK", type:"CURR(15,2)", confidence:"confirmed", note:"신용통제영역(KKBER)별로 다중 행 존재. 전사 기준은 KKBER='1000'." },
+        SFDC:{ field:"Account.Credit_Limit__c", type:"Currency(16,2)", confidence:"proposed", note:"SAP 에서 야간 배치로 복제되나 지연 발생. 실시간 판단 근거로 쓰지 말 것." },
+        OSS:null
+      },
+      interfaces:["IF-002 여신정보 배포"]
+    },
+    {
+      id:"Customer.owner", ko:"담당 영업사원", domain:"customer", type:"string",
+      owner:"영업기획팀", status:"proposed",
+      scope:["SAP","SFDC"],
+      definition:"해당 고객의 1차 영업 책임자. 사번(HR 기준)으로 식별한다.",
+      note:"SAP 는 파트너기능 기반이라 <b>고객당 담당자가 복수</b>일 수 있어 1:1 매핑이 성립하지 않습니다. 매핑 규칙 확정 전이므로 제안 상태로 유지 중.",
+      mappings:{
+        SAP:{ field:"KNVP-PERNR (PARVW='VE')", type:"NUMC(8)", confidence:"proposed", note:"판매영역별 다중 행. 대표 담당자 선정 규칙 미정." },
+        SFDC:{ field:"Account.OwnerId", type:"Lookup(User)", confidence:"proposed", note:"User.Employee_No__c 를 경유해야 사번으로 환원됨." },
+        OSS:null
+      },
+      interfaces:[]
+    },
+    {
+      id:"Opportunity.id", ko:"영업기회 식별자", domain:"sales", type:"string",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SFDC"],
+      definition:"수주 이전 단계의 영업 활동 단위를 식별하는 키. 영업기회는 Salesforce 에만 존재하는 개념이다.",
+      mappings:{
+        SAP:null,
+        SFDC:{ field:"Opportunity.Id", type:"Id(18)", confidence:"confirmed", note:"" },
+        OSS:null
+      },
+      interfaces:["IF-021 수주 생성 요청"]
+    },
+    {
+      id:"Opportunity.stage", ko:"영업기회 단계", domain:"sales", type:"enum",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SFDC"],
+      definition:"영업기회의 진행 단계. Closed Won 도달 시 SAP 수주 생성이 트리거된다.",
+      note:"<b>Closed Won 시점과 SAP 수주 생성일은 일치하지 않습니다</b> (평균 1.8일 지연). 월말 마감 구간에서 두 시스템의 건수가 어긋나는 주 원인입니다.",
+      mappings:{
+        SAP:null,
+        SFDC:{ field:"Opportunity.StageName", type:"Picklist", confidence:"confirmed", note:"영업조직별 Record Type 에 따라 단계 집합이 다름." },
+        OSS:null
+      },
+      interfaces:["IF-021 수주 생성 요청"]
+    },
+    {
+      id:"Opportunity.amount", ko:"영업기회 예상금액", domain:"sales", type:"decimal",
+      owner:"영업기획팀", status:"confirmed",
+      scope:["SFDC"],
+      definition:"영업기회의 예상 계약 금액. 확정 매출이 아니며 Order.netAmount 와 혼용 금지.",
+      mappings:{
+        SAP:null,
+        SFDC:{ field:"Opportunity.Amount", type:"Currency(16,2)", confidence:"confirmed", note:"제품 라인 합계로 자동 산출되는 경우와 직접 입력이 혼재." },
+        OSS:null
+      },
+      interfaces:[]
+    },
+    {
+      id:"Order.id", ko:"수주 식별자", domain:"order", type:"string",
+      owner:"영업관리팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"확정된 판매 주문을 식별하는 키. SAP 판매문서번호를 전사 기준으로 한다.",
+      mappings:{
+        SAP:{ field:"VBAK-VBELN", type:"CHAR(10)", confidence:"confirmed", note:"문서유형(AUART)='OR' 인 건만 수주로 간주." },
+        SFDC:{ field:"Opportunity.SAP_Order_No__c", type:"Text(10)", confidence:"confirmed", note:"SAP 생성 후 역동기화. 실패 시 공백으로 남아 있음." },
+        OSS:{ field:"Order.OrderNo", type:"Text(10)", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-021 수주 생성 요청","IF-031 포털 주문조회"]
+    },
+    {
+      id:"Order.date", ko:"수주일자", domain:"order", type:"date",
+      owner:"영업관리팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"판매 주문이 확정된 날짜. 회계 기간 귀속의 기준이 되는 날짜이다.",
+      note:"SAP 는 <b>문자열 YYYYMMDD</b>, 나머지는 날짜형입니다. 정규형은 ISO 8601 date.",
+      mappings:{
+        SAP:{ field:"VBAK-AUDAT", type:"DATS(8)", confidence:"confirmed", note:"시간 정보 없음. 타임존 개념 부재." },
+        SFDC:{ field:"Opportunity.CloseDate", type:"Date", confidence:"proposed", note:"엄밀히는 수주일이 아니라 기회 종료일. 대체값으로 사용 중이나 승인 전." },
+        OSS:{ field:"Order.OrderDate", type:"Date", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-021 수주 생성 요청","IF-031 포털 주문조회"]
+    },
+    {
+      id:"Order.netAmount", ko:"수주 순금액", domain:"order", type:"decimal",
+      owner:"재무팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"할인 반영 후·세액 제외 기준의 주문 총액. 헤더 통화(Order.currency) 기준으로 표기한다.",
+      mappings:{
+        SAP:{ field:"VBAK-NETWR", type:"CURR(15,2)", confidence:"confirmed", note:"헤더 통화 기준. 전사 통화 환산액은 별도 개념." },
+        SFDC:{ field:"Opportunity.Amount", type:"Currency(16,2)", confidence:"proposed", note:"기회금액을 대체 사용 중. 값이 자주 어긋나므로 확정 매출 산출에 쓰지 말 것." },
+        OSS:{ field:"Order.NetAmount", type:"Decimal(15,2)", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-021 수주 생성 요청","IF-031 포털 주문조회"]
+    },
+    {
+      id:"Order.currency", ko:"거래 통화", domain:"order", type:"enum",
+      owner:"재무팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"주문 금액의 표기 통화. ISO 4217 3자리 코드를 표준으로 한다.",
+      mappings:{
+        SAP:{ field:"VBAK-WAERK", type:"CUKY(5)", confidence:"confirmed", note:"내부 코드가 ISO 와 다른 통화 존재 (예: 원화 소수점 처리)." },
+        SFDC:{ field:"Opportunity.CurrencyIsoCode", type:"Picklist", confidence:"confirmed", note:"" },
+        OSS:{ field:"Order.CurrencyCode", type:"Text(3)", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-021 수주 생성 요청"]
+    },
+    {
+      id:"OrderItem.qty", ko:"수주 수량", domain:"order", type:"decimal",
+      owner:"영업관리팀", status:"confirmed",
+      scope:["SAP","OSS"],
+      definition:"품목별 주문 수량. 기본 단위(BaseUoM) 환산 전 판매 단위 기준이다.",
+      mappings:{
+        SAP:{ field:"VBAP-KWMENG", type:"QUAN(13,3)", confidence:"confirmed", note:"판매단위(VRKME) 기준. 단위 환산 없이 합산 금지." },
+        SFDC:null,
+        OSS:{ field:"OrderItem.Quantity", type:"Decimal(13,3)", confidence:"confirmed", note:"단위 필드 미보유 — 갭 확인 필요." }
+      },
+      interfaces:["IF-021 수주 생성 요청"]
+    },
+    {
+      id:"Invoice.id", ko:"청구 식별자", domain:"billing", type:"string",
+      owner:"재무팀", status:"confirmed",
+      scope:["SAP","OSS"],
+      definition:"발행된 청구 문서를 식별하는 키.",
+      mappings:{
+        SAP:{ field:"VBRK-VBELN", type:"CHAR(10)", confidence:"confirmed", note:"" },
+        SFDC:null,
+        OSS:{ field:"Invoice.InvoiceNo", type:"Text(10)", confidence:"proposed", note:"포털 청구 조회 기능 개발 중. 필드는 존재하나 미사용." }
+      },
+      interfaces:["IF-041 청구내역 배포"]
+    },
+    {
+      id:"Revenue.net", ko:"순매출", domain:"billing", type:"decimal",
+      owner:"재무팀", status:"disputed",
+      scope:["SAP","SFDC"],
+      definition:"인식 기준을 충족한 매출액. 전사 표준은 청구 문서 발행 기준(SAP VBRK)이다.",
+      note:"<b>정의 충돌 진행 중.</b> 영업 조직은 Closed Won 기준 파이프라인 금액을 매출로 호칭하고 있으며, 재무는 청구 기준을 사용합니다. 같은 '매출'이라는 단어로 두 숫자가 유통되고 있어 지표 산출은 반드시 시맨틱 레이어의 <code>revenue_net</code> 메트릭을 경유해야 합니다. 이 항목은 물리 필드 매핑만으로 해결되지 않습니다.",
+      mappings:{
+        SAP:{ field:"VBRK-NETWR", type:"CURR(15,2)", confidence:"confirmed", note:"전사 표준 원천." },
+        SFDC:{ field:"Opportunity.Amount (StageName='Closed Won')", type:"Currency(16,2)", confidence:"proposed", note:"영업 조직 관행. 표준 아님 — 대사 시 차이 원인." },
+        OSS:null
+      },
+      interfaces:["IF-041 청구내역 배포"]
+    },
+    {
+      id:"Product.sku", ko:"품목코드", domain:"product", type:"string",
+      owner:"상품기획팀", status:"confirmed",
+      scope:["SAP","SFDC","OSS"],
+      definition:"판매 가능한 최소 단위 품목을 식별하는 코드. SAP 자재번호를 전사 기준으로 한다.",
+      mappings:{
+        SAP:{ field:"MARA-MATNR", type:"CHAR(18)", confidence:"confirmed", note:"선행 0 채움 여부가 시스템 설정에 따라 다름." },
+        SFDC:{ field:"Product2.ProductCode", type:"Text(255)", confidence:"confirmed", note:"선행 0 미보존. 조인 시 정규화 필수." },
+        OSS:{ field:"Product.Sku", type:"Text(18)", confidence:"confirmed", note:"" }
+      },
+      interfaces:["IF-051 품목마스터 동기화"]
+    }
+  ]
+};
+</script>
+<!-- ════════════════════════ 데이터 블록 끝 ════════════════════════ -->
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="wordmark">
+      <span class="eyebrow" id="mScope"></span>
+      <span class="wordmark__name" id="mName"></span>
+      <span class="wordmark__sub" id="mSub"></span>
+    </div>
+    <div class="coverage" id="coverage"></div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-panel="p-terms">용어<span class="cnt" id="cTerms"></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-reverse">역방향 조회<span class="cnt" id="cRev"></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-panel="p-gaps">갭 리포트<span class="cnt" id="cGaps"></span></button>
+  </nav>
+</header>
+
+<main class="shell">
+
+  <!-- ── 용어 ── -->
+  <section class="panel" id="p-terms">
+    <div class="split">
+      <aside class="index">
+        <div class="search">
+          <input id="q" type="search" placeholder="개념명, 한글명, 물리 필드명으로 검색" autocomplete="off" aria-label="용어 검색">
+          <kbd>/</kbd>
+        </div>
+        <div class="filters" id="filters"></div>
+        <div class="termlist" id="termlist" role="listbox" aria-label="용어 목록"></div>
+      </aside>
+      <article class="detail" id="detail"></article>
+    </div>
+  </section>
+
+  <!-- ── 역방향 ── -->
+  <section class="panel" id="p-reverse" hidden>
+    <div class="board">
+      <div class="board__head">
+        <span class="eyebrow">물리 필드 → 개념</span>
+        <h2 class="board__title">역방향 조회</h2>
+        <p class="board__desc">각 시스템에서 실제로 마주친 필드명으로 개념을 찾습니다. 코드나 쿼리를 읽다가 <code>KNVP-PERNR</code> 같은 이름을 만났을 때 여기서 출발하세요.</p>
+      </div>
+      <div class="board__body">
+        <div class="filters" style="padding-left:0;padding-right:0;border:0">
+          <input id="rq" type="search" placeholder="물리 필드명 검색" aria-label="물리 필드 검색"
+                 style="font-family:var(--mono);font-size:12px;padding:7px 10px;border:1px solid var(--rule);border-radius:2px;width:280px;max-width:100%">
+        </div>
+        <div class="tbl__wrap">
+          <table class="tbl">
+            <thead><tr><th>시스템</th><th>물리 필드</th><th>타입</th><th>개념</th><th>한글명</th><th>확정</th></tr></thead>
+            <tbody id="revBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 갭 ── -->
+  <section class="panel" id="p-gaps" hidden>
+    <div class="board" style="margin-bottom:20px">
+      <div class="board__head">
+        <span class="eyebrow">범위 내 미매핑</span>
+        <h2 class="board__title">매핑이 비어 있는 항목</h2>
+        <p class="board__desc">해당 시스템에 <em>있어야 한다고 선언</em>했는데 매핑이 없는 건입니다. 시스템 범위 밖(해당 없음)은 여기 나오지 않습니다.</p>
+      </div>
+      <div class="board__body">
+        <div class="tbl__wrap">
+          <table class="tbl">
+            <thead><tr><th>개념</th><th>한글명</th><th>비어 있는 시스템</th><th>소유</th><th></th></tr></thead>
+            <tbody id="gapBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="board">
+      <div class="board__head">
+        <span class="eyebrow">개념 미등록</span>
+        <h2 class="board__title">분류되지 않은 물리 필드</h2>
+        <p class="board__desc">수집 시점에 시스템에 존재했으나 어떤 개념에도 연결되지 않은 필드입니다. 매 릴리스 후 이 목록이 늘어나며, 처리 리드타임이 이 사전의 건강 지표입니다.</p>
+      </div>
+      <div class="board__body">
+        <div class="tbl__wrap">
+          <table class="tbl">
+            <thead><tr><th>시스템</th><th>물리 필드</th><th>타입</th><th>수집일</th><th>메모</th></tr></thead>
+            <tbody id="uncBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  이 문서는 <code>canonical.yaml</code> 로부터 <code>build.py</code> 가 생성합니다. 내용 수정은 이 파일이 아니라 저장소의 YAML 에서 하세요 ·
+  <span id="fContact"></span><br>
+  <b>샘플 데이터로 채운 프로토타입입니다.</b> 실제 기업 데이터가 아니며, 설계 의도는
+  <a href="/2026/08/20/enterprise-data-dictionary-saas/" style="color:inherit">관련 글</a>에 정리해 두었습니다.
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   렌더링 — 데이터를 바꿔도 이 아래는 손댈 필요 없습니다
+   ══════════════════════════════════════════════════════════ */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SYS = Object.fromEntries(DICT.systems.map(s=>[s.id,s]));
+const DOM = Object.fromEntries(DICT.domains.map(d=>[d.id,d.label]));
+
+let state = { domain:"all", q:"", sel:null };
+
+/* ── 파생 계산 ── */
+function coverageFor(sysId){
+  const inScope = DICT.terms.filter(t=>t.scope.includes(sysId));
+  const mapped  = inScope.filter(t=>t.mappings[sysId]);
+  return { mapped:mapped.length, total:inScope.length,
+           pct: inScope.length ? Math.round(mapped.length/inScope.length*100) : 0 };
+}
+function gapsFor(t){ return t.scope.filter(s=>!t.mappings[s]); }
+const ALL_GAPS = DICT.terms.map(t=>({t,miss:gapsFor(t)})).filter(g=>g.miss.length);
+const REV = DICT.terms.flatMap(t =>
+  DICT.systems.filter(s=>t.mappings[s.id]).map(s=>({
+    sys:s.id, field:t.mappings[s.id].field, type:t.mappings[s.id].type,
+    conf:t.mappings[s.id].confidence, term:t
+  }))
+);
+
+/* ── 헤더 ── */
+$("#mScope").textContent = DICT.meta.scope;
+$("#mName").textContent  = DICT.meta.name;
+$("#mSub").textContent   = `v${DICT.meta.version} · ${DICT.meta.built} 빌드 · ${DICT.meta.steward}`;
+$("#fContact").textContent = DICT.meta.contact;
+$("#cTerms").textContent = DICT.terms.length;
+$("#cRev").textContent   = REV.length;
+$("#cGaps").textContent  = ALL_GAPS.length + DICT.unclassified.length;
+
+$("#coverage").innerHTML = DICT.systems.map(s=>{
+  const c = coverageFor(s.id);
+  return `<div class="cov">
+    <div class="cov__label"><span class="cov__dot" style="background:${s.color}"></span>
+      <span class="cov__name">${esc(s.label)}</span></div>
+    <div class="cov__num">${c.pct}<small>% · ${c.mapped}/${c.total}</small></div>
+    <div class="cov__bar"><i style="width:${c.pct}%;background:${s.color}"></i></div>
+  </div>`;
+}).join("");
+
+/* ── 필터 ── */
+$("#filters").innerHTML =
+  `<button class="chip" data-d="all" aria-pressed="true">전체</button>` +
+  DICT.domains.map(d=>`<button class="chip" data-d="${d.id}" aria-pressed="false">${esc(d.label)}</button>`).join("");
+
+$("#filters").addEventListener("click", e=>{
+  const b = e.target.closest(".chip"); if(!b) return;
+  state.domain = b.dataset.d;
+  $$(".chip","#filters"||document).forEach(c=>c.setAttribute("aria-pressed", c===b));
+  renderList();
+});
+
+/* ── 목록 ── */
+function matches(t,q){
+  if(!q) return true;
+  const hay = [t.id, t.ko, t.definition, t.owner,
+    ...DICT.systems.map(s=>t.mappings[s.id]?.field||"")].join(" ").toLowerCase();
+  return hay.includes(q.toLowerCase());
+}
+function visible(){
+  return DICT.terms.filter(t =>
+    (state.domain==="all" || t.domain===state.domain) && matches(t,state.q));
+}
+function renderList(){
+  const rows = visible();
+  const list = $("#termlist");
+  if(!rows.length){ list.innerHTML = `<p class="empty">일치하는 용어가 없습니다.<br>물리 필드명으로도 검색해 보세요.</p>`; return; }
+
+  const byDomain = {};
+  rows.forEach(t=>(byDomain[t.domain] ||= []).push(t));
+
+  list.innerHTML = Object.entries(byDomain).map(([d,ts])=>`
+    <div class="grouphead eyebrow">${esc(DOM[d]||d)} · ${ts.length}</div>
+    ${ts.map(t=>{
+      const miss = gapsFor(t).length;
+      const prop = DICT.systems.some(s=>t.mappings[s.id]?.confidence==="proposed");
+      return `<button class="termrow" data-id="${esc(t.id)}" role="option"
+        aria-current="${state.sel===t.id}">
+        <span class="termrow__id">${esc(t.id)}<span class="termrow__flags">${
+          miss?`<i class="flagdot" style="background:var(--gap)" title="미매핑 ${miss}건"></i>`:""}${
+          prop?`<i class="flagdot" style="background:var(--proposed)" title="미검토 제안 포함"></i>`:""}${
+          t.status==="disputed"?`<i class="flagdot" style="background:var(--gap)" title="정의 충돌"></i>`:""}
+        </span></span>
+        <span class="termrow__ko">${esc(t.ko)}</span>
+      </button>`;
+    }).join("")}
+  `).join("");
+}
+
+$("#termlist").addEventListener("click", e=>{
+  const b = e.target.closest(".termrow"); if(!b) return;
+  select(b.dataset.id);
+});
+
+/* ── 상세 ── */
+function trackHTML(t, s){
+  const m = t.mappings[s.id];
+  const inScope = t.scope.includes(s.id);
+
+  if(!m && !inScope) return `<div class="track track--na" style="border-top-color:${s.color}">
+    <div class="track__sys"><span class="cov__dot" style="background:var(--rule)"></span>
+      <span class="track__name" style="color:var(--ink-3)">${esc(s.label)}</span></div>
+    <div class="track__field">해당 없음</div>
+    <div class="track__type">이 시스템의 범위에 포함되지 않는 개념</div>
+  </div>`;
+
+  if(!m) return `<div class="track track--gap" style="border-top-color:${s.color}">
+    <div class="track__sys"><span class="cov__dot" style="background:${s.color}"></span>
+      <span class="track__name" style="color:${s.color}">${esc(s.label)}</span></div>
+    <div class="track__field">매핑 없음</div>
+    <div class="track__type">범위에 포함되나 대응 필드 미확인</div>
+    <span class="track__tag" style="background:color-mix(in srgb,var(--gap) 12%,transparent);color:var(--gap)">GAP</span>
+  </div>`;
+
+  const prop = m.confidence==="proposed";
+  return `<div class="track" style="border-top-color:${s.color}">
+    <div class="track__sys"><span class="cov__dot" style="background:${s.color}"></span>
+      <span class="track__name" style="color:${s.color}">${esc(s.label)}</span></div>
+    <div class="track__field">${esc(m.field)}</div>
+    <div class="track__type">${esc(m.type)}</div>
+    ${m.note?`<div class="track__note">${esc(m.note)}</div>`:""}
+    <span class="track__tag" style="background:${prop
+      ?"color-mix(in srgb,var(--proposed) 12%,transparent);color:var(--proposed)"
+      :"color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok)"}">${prop?"제안 · 미검토":"확정"}</span>
+  </div>`;
+}
+
+function statusBadge(t){
+  if(t.status==="disputed") return `<span class="badge badge--gap">정의 충돌</span>`;
+  if(t.status==="proposed") return `<span class="badge badge--proposed">제안</span>`;
+  return `<span class="badge badge--ok">확정</span>`;
+}
+
+function renderDetail(t){
+  if(!t){ $("#detail").innerHTML = `<div class="dsec"><p class="empty">왼쪽에서 용어를 선택하세요.</p></div>`; return; }
+  const miss = gapsFor(t);
+
+  $("#detail").innerHTML = `
+    <div class="dhead">
+      <div class="dhead__top">
+        <div>
+          <span class="eyebrow">${esc(DOM[t.domain]||t.domain)}</span>
+          <h1 class="dhead__id">${esc(t.id)}</h1>
+          <p class="dhead__ko">${esc(t.ko)}</p>
+        </div>
+        <div class="badges">
+          ${statusBadge(t)}
+          ${miss.length?`<span class="badge badge--gap">미매핑 ${miss.length}</span>`:""}
+        </div>
+      </div>
+      <dl class="facts">
+        <div class="fact"><dt class="eyebrow">소유 도메인</dt><dd>${esc(t.owner)}</dd></div>
+        <div class="fact"><dt class="eyebrow">자료형</dt><dd class="m">${esc(t.type)}</dd></div>
+        <div class="fact"><dt class="eyebrow">적용 범위</dt><dd class="m">${t.scope.join(" · ")}</dd></div>
+      </dl>
+    </div>
+
+    <div class="dsec">
+      <div class="dsec__head"><span class="eyebrow">정의</span>
+        <button class="linkbtn" id="cr">수정 요청 양식 복사</button></div>
+      <p class="definition">${esc(t.definition)}</p>
+      ${t.note?`<p class="note">${t.note}</p>`:""}
+    </div>
+
+    <div class="dsec">
+      <div class="dsec__head"><span class="eyebrow">시스템별 대응 필드</span></div>
+      <div class="tracks">${DICT.systems.map(s=>trackHTML(t,s)).join("")}</div>
+    </div>
+
+    ${t.codes?`<div class="dsec">
+      <div class="dsec__head"><span class="eyebrow">코드값 대응</span></div>
+      <div class="tbl__wrap"><table class="tbl">
+        <thead><tr><th>표준 코드</th><th>의미</th>${DICT.systems.map(s=>
+          `<th><span class="sysdot" style="background:${s.color}"></span>${esc(s.label)}</th>`).join("")}</tr></thead>
+        <tbody>${t.codes.map(c=>`<tr>
+          <td class="m"><b>${esc(c.code)}</b></td><td>${esc(c.label)}</td>
+          ${DICT.systems.map(s=>c[s.id]
+            ? `<td class="m">${esc(c[s.id])}</td>`
+            : `<td class="miss">대응 없음</td>`).join("")}
+        </tr>`).join("")}</tbody>
+      </table></div>
+    </div>`:""}
+
+    ${t.interfaces?.length?`<div class="dsec">
+      <div class="dsec__head"><span class="eyebrow">사용 인터페이스</span></div>
+      <div class="iflist">${t.interfaces.map(i=>`<span class="if">${esc(i)}</span>`).join("")}</div>
+    </div>`:""}
+  `;
+
+  const cr = $("#cr");
+  if(cr) cr.addEventListener("click", ()=>{
+    const tpl = `[용어사전 수정 요청]\n개념: ${t.id} (${t.ko})\n소유: ${t.owner}\n사전 버전: ${DICT.meta.version}\n\n요청 유형: (정의 수정 / 매핑 추가 / 매핑 오류 / 폐기)\n내용:\n\n근거:\n`;
+    navigator.clipboard?.writeText(tpl).then(()=>{
+      cr.textContent="복사됨 — 저장소 이슈에 붙여넣기";
+      setTimeout(()=>cr.textContent="수정 요청 양식 복사",2400);
+    });
+  });
+}
+
+function select(id){
+  state.sel = id;
+  location.hash = "term=" + encodeURIComponent(id);
+  renderList();
+  renderDetail(DICT.terms.find(t=>t.id===id));
+  $$(".termrow").find(b=>b.dataset.id===id)?.scrollIntoView({block:"nearest"});
+}
+
+/* ── 검색 ── */
+$("#q").addEventListener("input", e=>{ state.q = e.target.value; renderList(); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+    e.preventDefault(); $("#q").focus();
+  }
+  if(["ArrowDown","ArrowUp"].includes(e.key) && document.activeElement===$("#q")){
+    e.preventDefault();
+    const rows = visible(); if(!rows.length) return;
+    let i = rows.findIndex(t=>t.id===state.sel);
+    i = e.key==="ArrowDown" ? Math.min(i+1, rows.length-1) : Math.max(i-1, 0);
+    select(rows[i===-1?0:i].id);
+  }
+});
+
+/* ── 역방향 ── */
+function renderRev(q=""){
+  const rows = REV.filter(r =>
+    !q || (r.field+" "+r.term.id+" "+r.term.ko).toLowerCase().includes(q.toLowerCase()));
+  $("#revBody").innerHTML = rows.length ? rows.map(r=>`<tr>
+    <td><span class="sysdot" style="background:${SYS[r.sys].color}"></span>${esc(SYS[r.sys].label)}</td>
+    <td class="m"><b>${esc(r.field)}</b></td>
+    <td class="m" style="color:var(--ink-3)">${esc(r.type)}</td>
+    <td><button class="jump" data-id="${esc(r.term.id)}">${esc(r.term.id)}</button></td>
+    <td>${esc(r.term.ko)}</td>
+    <td>${r.conf==="proposed"
+      ? `<span style="color:var(--proposed);font-family:var(--mono);font-size:11px">제안</span>`
+      : `<span style="color:var(--ok);font-family:var(--mono);font-size:11px">확정</span>`}</td>
+  </tr>`).join("") : `<tr><td colspan="6"><p class="empty">일치하는 필드가 없습니다.</p></td></tr>`;
+}
+$("#rq").addEventListener("input", e=>renderRev(e.target.value));
+
+/* ── 갭 ── */
+$("#gapBody").innerHTML = ALL_GAPS.length ? ALL_GAPS.map(({t,miss})=>`<tr>
+  <td class="m"><b>${esc(t.id)}</b></td>
+  <td>${esc(t.ko)}</td>
+  <td>${miss.map(s=>`<span class="badge badge--gap" style="margin-right:4px">${esc(SYS[s].label)}</span>`).join("")}</td>
+  <td>${esc(t.owner)}</td>
+  <td><button class="jump" data-id="${esc(t.id)}">열기</button></td>
+</tr>`).join("") : `<tr><td colspan="5"><p class="empty">범위 내 미매핑 항목이 없습니다.</p></td></tr>`;
+
+$("#uncBody").innerHTML = DICT.unclassified.map(u=>`<tr>
+  <td><span class="sysdot" style="background:${SYS[u.system].color}"></span>${esc(SYS[u.system].label)}</td>
+  <td class="m"><b>${esc(u.field)}</b></td>
+  <td class="m" style="color:var(--ink-3)">${esc(u.type)}</td>
+  <td class="m" style="color:var(--ink-3)">${esc(u.seen)}</td>
+  <td style="color:var(--ink-2)">${esc(u.hint)}</td>
+</tr>`).join("");
+
+document.addEventListener("click", e=>{
+  const j = e.target.closest(".jump"); if(!j) return;
+  showTab("p-terms"); select(j.dataset.id);
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+/* ── 탭 ── */
+function showTab(id){
+  $$(".tab").forEach(t=>t.setAttribute("aria-selected", t.dataset.panel===id));
+  $$(".panel").forEach(p=>p.hidden = p.id!==id);
+}
+$$(".tab").forEach(t=>t.addEventListener("click",()=>showTab(t.dataset.panel)));
+
+/* ── 부팅 ── */
+renderList();
+renderRev();
+const h = decodeURIComponent((location.hash.match(/term=(.+)$/)||[])[1]||"");
+select(DICT.terms.find(t=>t.id===h) ? h : DICT.terms[0].id);
+</script>
+</body>
+</html>
